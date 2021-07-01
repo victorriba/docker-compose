@@ -1,0 +1,39 @@
+version: "2.4"
+services:
+  servicename:
+    image: victorriba/sapps-ide
+    container_name: servicename
+    restart: always
+    volumes:
+      - /home/team/servicename:/home
+    environment:
+      ROOT_URL: https://servicename.domain.com:3000
+      REACT_NATIVE_PACKAGER_HOSTNAME: servicename.domain.com
+      EXPO_DEVTOOLS_LISTEN_ADDRESS: 0.0.0.0
+    labels:
+      - traefik.http.routers.servicename-web.rule=Host(`servicename.domain.com`)
+      - traefik.http.routers.servicename-web.entryPoints=web
+      - traefik.http.routers.servicename-web.service=servicename-web
+      - traefik.http.services.servicename-web.loadbalancer.server.port=8080
+      - traefik.http.routers.servicename-web.middlewares=servicename-web
+      - traefik.http.middlewares.servicename-web.redirectscheme.scheme=https
+      - traefik.http.routers.servicename-secure.rule=Host(`servicename.domain.com`)
+      - traefik.http.routers.servicename-secure.entryPoints=web-secure
+      - traefik.http.routers.servicename-secure.service=servicename-secure
+      - traefik.http.services.servicename-secure.loadbalancer.server.port=8080
+      - traefik.http.routers.servicename-secure.tls=true
+      - traefik.http.routers.servicename-secure.tls.certresolver=myresolver
+      - traefik.http.routers.servicename-meteor.rule=Host(`servicename.domain.com`)
+      - traefik.http.routers.servicename-meteor.entryPoints=meteor
+      - traefik.http.routers.servicename-meteor.service=servicename-meteor
+      - traefik.http.services.servicename-meteor.loadbalancer.server.port=3000
+      - traefik.http.routers.servicename-meteor.tls=true
+      - traefik.http.routers.servicename-meteor.tls.certresolver=myresolver
+    command: sh start.sh
+    networks:
+    - default
+
+networks:
+  default:
+    external:
+      name: gateway
