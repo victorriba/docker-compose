@@ -1,0 +1,23 @@
+version: "2.4"
+
+services:
+  traefik:
+    image: traefik:v2.4
+    container_name: traefik
+    ports:
+      - "80:80"
+      - "443:443"
+      - "3000:3000"
+      - "19000-19002:19000-19002"
+      - "19006:19006"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.yml:/traefik.yml
+      - ./acme.json:/acme.json
+    networks:
+      - default
+
+networks:
+  default:
+    external: 
+      name: gateway
